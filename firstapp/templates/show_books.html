@@ -1,0 +1,74 @@
+{% load static%}
+<html>
+    <head>
+        <title>Book Details</title>
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    </head>
+    <style>
+        table, th, td{border:1px solid black}
+    </style>
+    <body>
+        <table class="table table-dark table-striped">
+            {% if books %} 
+            <tr>
+                <th>Book ID</th>
+                <th>Book Name</th>
+                <th>Book Quantity</th>
+                <th>Book Price</th>
+                <th>Book Author</th>
+                <th>Book Published</th>
+                <th>Actions</th>
+            </tr>          
+            {% for book in books %}
+            <tr>
+                <td>{{book.id}}</td>
+                <td>{{book.name}}</td>
+                <td>{{book.qty}}</td>
+                <td>{{book.price}}</td>
+                <td>{{book.author}}</td>
+                <td>{{book.is_published}}</td>
+                <td>
+                    {% if not inactive %}
+                    <form action = "{% url 'update_book' book.id %}" method = "post">
+                        {% csrf_token %}
+                        <input type="submit" value="Update" class="btn btn-secondary">
+                    </form>
+
+                    <form action="{% url 'soft_delete_book' book.id %}" method="post">
+                        {% csrf_token %}
+                        <input type = "submit" value="Soft Delete" class="btn btn-warning">
+                    </form>
+                    
+                    {% endif %}
+
+                    {% if not active %}
+                    <form action="{% url 'restore_book' book.id %}" method="post">
+                        {% csrf_token %}
+                        <input type = "submit" value="Restore" class="btn btn-warning">
+                    </form>
+                    {% endif %}
+                    
+
+                    <form action = "{% url 'delete_book' book.id %}"method = "post">
+                        {% csrf_token %}
+                        <input type="submit" value="Hard Delete" class="btn btn-danger">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table> <br>
+        {% else %}
+        <h2>No Record Found</h2>
+        {% endif %}
+        <a href = "{% url 'home_page'%}" class="btn btn-outline-primary">Home Page</a>
+        {% if not active %}
+        <a href = "{% url 'all_active_books'%}" class="btn btn-outline-secondary">all_active_books</a>
+        {% else %}
+        <a href = "{% url 'all_inactive_books'%}" class="btn btn-outline-warning">all_inactive_books</a>
+        {% endif %}
+
+
+    </body>
+
+</html>
